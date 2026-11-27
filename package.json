@@ -1,0 +1,11 @@
+{
+  "name": "registro-ciudadano-eda",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nucleo C++ y API local Node sin base de datos",
+  "scripts": {
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1",
+    "start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start.ps1"
+  },
+  "engines": { "node": ">=20" }
+}

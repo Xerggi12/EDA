@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sistema local de registros ciudadanos. Registro, consulta por DNI y actualización de datos.">
+  <title>Registro de personas</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="encabezado">
+    <div class="contenedor encabezado-interior">
+      <div>
+        <p class="subtitulo">Estructura de Datos Avanzada</p>
+        <h1>Registro de personas</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <div id="conexion" class="aviso aviso-info" role="status" aria-live="polite">Conectando con el sistema…</div>
+
+    <nav class="pestanas" role="tablist" aria-label="Funciones del sistema">
+      <button id="tab-buscar" type="button" role="tab" aria-controls="panel-buscar" aria-selected="true" data-panel="buscar">Buscar personas</button>
+      <button id="tab-registrar" type="button" role="tab" aria-controls="panel-registrar" aria-selected="false" tabindex="-1" data-panel="registrar">Registrar persona</button>
+    </nav>
+
+    <div id="mensaje" class="aviso" role="status" aria-live="polite" hidden></div>
+
+    <section id="panel-buscar" class="panel" role="tabpanel" aria-labelledby="tab-buscar">
+      <div class="tarjeta">
+        <h2>Buscar personas</h2>
+        <form id="form-buscar">
+          <fieldset data-requiere-listo disabled>
+            <div class="fila-busqueda">
+              <div class="campo"><label for="dni">DNI</label>
+                <input id="dni" name="dni" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" placeholder="8 dígitos" autocomplete="off">
+              </div>
+              <div class="campo"><label for="buscar-firstNames">Nombres</label>
+                <input id="buscar-firstNames" name="firstNames" list="opciones-firstNames" data-filtro-nombre maxlength="100" autocomplete="off">
+                <datalist id="opciones-firstNames"></datalist>
+              </div>
+              <div class="campo"><label for="buscar-paternalSurname">Apellido paterno</label>
+                <input id="buscar-paternalSurname" name="paternalSurname" list="opciones-paternalSurname" data-filtro-nombre maxlength="100" autocomplete="off">
+                <datalist id="opciones-paternalSurname"></datalist>
+              </div>
+              <div class="campo"><label for="buscar-maternalSurname">Apellido materno</label>
+                <input id="buscar-maternalSurname" name="maternalSurname" list="opciones-maternalSurname" data-filtro-nombre maxlength="100" autocomplete="off">
+                <datalist id="opciones-maternalSurname"></datalist>
+              </div>
+              <button class="boton boton-primario" type="submit">Buscar persona</button>
+              <button id="nueva-consulta" class="boton boton-secundario" type="button">Nueva consulta</button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
+
+
+      <div id="resultados-consulta" class="tarjeta">
+        <div class="titulo-fila"><h2 id="titulo-resultados">Personas registradas</h2><span id="cantidad-muestra" class="texto-suave"></span></div>
+        <p id="muestra-vacia" class="texto-suave">Cargando registros…</p>
+        <div id="tabla-muestra-contenedor" class="tabla-contenedor">
+          <table>
+            <caption class="solo-lectores">Personas registradas</caption>
+            <thead><tr><th>DNI</th><th>Nombres y apellidos</th><th>Estado</th><th>Acción</th></tr></thead>
+            <tbody id="tabla-muestra"></tbody>
+          </table>
+        </div>
+        <div id="paginas-busqueda" class="acciones-detalle" hidden>
+          <button type="button" id="pagina-anterior" class="boton boton-secundario">Anterior</button>
+          <button type="button" id="pagina-siguiente" class="boton boton-secundario">Siguiente</button>
+        </div>
+      </div>
+      <article id="detalle-ciudadano" class="tarjeta" hidden>
+        <div class="titulo-fila"><h2>Ficha de la persona</h2><span id="estado-ciudadano" class="insignia"></span></div>
+        <p id="origen-ficha" class="solo-impresion">Registro académico de personas · Copia informativa</p>
+        <dl id="datos-ciudadano" class="datos-ciudadano"></dl>
+        <div class="acciones-detalle">
+          <button id="editar-persona" class="boton boton-primario" type="button" disabled>Editar datos</button>
+          <button id="imprimir-ficha" class="boton boton-secundario" type="button" data-operacion>Imprimir ficha</button>
+          <button id="ver-historial" class="boton boton-secundario" type="button" disabled>Historial de ediciones</button>
+          <button id="registrar-fallecimiento" class="boton" type="button" disabled></button>
+        </div>
+        <section id="historial-persona" hidden>
+          <h3>Últimas ediciones</h3>
+          <div id="lista-historial"></div>
+        </section>
+      </article>
+    </section>
+
+    <section id="panel-registrar" class="panel" role="tabpanel" aria-labelledby="tab-registrar" hidden>
+      <div class="tarjeta">
+        <h2 id="titulo-formulario">Registrar persona</h2>
+        <form id="form-registrar">
+          <fieldset data-requiere-listo disabled>
+            <legend>Datos personales</legend>
+            <div id="opciones-edicion" hidden>
+              <p>DNI: <strong id="dni-edicion"></strong></p>
+              <label><input id="rectificar-identidad" type="checkbox"> Rectificar identidad, nacimiento o nacionalidad con sustento documental</label>
+            </div>
+            <div class="rejilla-formulario">
+              <div class="campo"><label for="nombres">Nombres</label><input id="nombres" name="firstNames" maxlength="100" list="lista-nombres" data-autocompletar required autocomplete="off"></div>
+              <div class="campo"><label for="apellido-paterno">Apellido paterno</label><input id="apellido-paterno" name="paternalSurname" maxlength="100" list="lista-nombres" data-autocompletar required autocomplete="off"></div>
+              <div class="campo"><label for="apellido-materno">Apellido materno</label><input id="apellido-materno" name="maternalSurname" maxlength="100" list="lista-nombres" data-autocompletar required autocomplete="off"></div>
+              <div class="campo"><label for="nacionalidad">Nacionalidad</label><input id="nacionalidad" name="nationality" maxlength="80" value="Peruana" required></div>
+              <div class="campo"><label for="estado-civil">Estado civil</label><select id="estado-civil" name="civilStatus" required><option value="soltero">Soltero/a</option><option value="casado">Casado/a</option><option value="divorciado">Divorciado/a</option><option value="viudo">Viudo/a</option><option value="conviviente">Conviviente</option></select></div>
+              <div class="campo"><label for="ubigeo-nacimiento">Ubigeo de nacimiento</label><input id="ubigeo-nacimiento" name="birthUbigeo" list="lista-ubigeos" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="Ej. 080101" aria-describedby="descripcion-nacimiento" required><small id="descripcion-nacimiento">Departamento / provincia / distrito</small></div>
+            </div>
+            <h3>Dirección</h3>
+            <div class="rejilla-formulario">
+              <div class="campo"><label for="ubigeo-direccion">Ubigeo de dirección</label><input id="ubigeo-direccion" name="addressUbigeo" list="lista-ubigeos" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="Ej. 150122" aria-describedby="descripcion-direccion" required><small id="descripcion-direccion">Departamento / provincia / distrito</small></div>
+              <div class="campo"><label for="ciudad">Ciudad</label><input id="ciudad" name="city" maxlength="100" required></div>
+              <div class="campo"><label for="calle">Calle o avenida</label><input id="calle" name="street" maxlength="120" required></div>
+              <div class="campo"><label for="numero-direccion">Número</label><input id="numero-direccion" name="number" type="number" min="0" max="999999" step="1" required></div>
+              <div class="campo campo-doble"><label for="detalle-direccion">Detalle de la dirección <span class="texto-suave">(opcional)</span></label><input id="detalle-direccion" name="detail" maxlength="150" placeholder="Interior, lote, referencia…"></div>
+            </div>
+            <h3>Contacto</h3>
+            <div class="rejilla-formulario">
+              <div class="campo"><label for="telefono">Teléfono de referencia</label><input id="telefono" name="phone" type="tel" pattern="[0-9]{9}" minlength="9" maxlength="9" placeholder="987654321" required></div>
+              <div class="campo campo-doble"><label for="correo">Correo electrónico</label><input id="correo" name="email" type="email" maxlength="150" placeholder="persona@example.test" required></div>
+            </div>
+            <div id="sustento-edicion" class="rejilla-formulario" hidden>
+              <div class="campo campo-doble"><label for="motivo-edicion">Motivo de la edición</label><input id="motivo-edicion" name="reason" maxlength="250"></div>
+              <div class="campo campo-doble"><label for="referencia-edicion">Referencia del documento o expediente</label><input id="referencia-edicion" name="reference" maxlength="250" aria-describedby="ayuda-referencia"><small id="ayuda-referencia">Obligatoria al cambiar identidad, nacionalidad, nacimiento o estado civil.</small></div>
+            </div>
+            <div class="acciones-formulario"><button id="guardar-persona" class="boton boton-primario" type="submit">Registrar persona</button><button class="boton boton-secundario" type="reset">Limpiar formulario</button><button id="cancelar-edicion" class="boton boton-secundario" type="button" hidden>Cancelar edición</button></div>
+          </fieldset>
+        </form>
+        <datalist id="lista-nombres"></datalist>
+        <datalist id="lista-ubigeos"></datalist>
+      </div>
+    </section>
+
+    <noscript><div class="aviso aviso-error">Activa JavaScript en el navegador para utilizar el sistema.</div></noscript>
+  </main>
+</body>
+</html>

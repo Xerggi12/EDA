@@ -1,0 +1,9 @@
+build/
+data/
+*.obj
+*.exe
+*.pdb
+tools/
+/docs/
+/server.zip
+
